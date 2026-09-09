@@ -1,0 +1,44 @@
+name: Sync upstream and generate custom templates
+
+on:
+  schedule:
+    - cron: "0 4 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: sync-and-generate-custom-templates
+  cancel-in-progress: false
+
+jobs:
+  sync-and-generate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out fork
+        uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+
+      - name: Merge upstream main
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git remote add upstream https://github.com/Aethersailor/Custom_OpenClash_Rules.git
+          git fetch upstream main
+          git merge --no-edit upstream/main
+
+      - name: Generate and test templates
+        run: |
+          python py/generate_my_templates.py
+          python py/test_generate_my_templates.py
+
+      - name: Commit generated templates
+        run: |
+          git add cfg/my_Custom_Clash.ini cfg/my_Custom_Clash_Full.ini
+          if ! git diff --cached --quiet; then
+            git commit -m "chore: update custom OpenClash templates"
+          fi
+          git push origin HEAD:main
