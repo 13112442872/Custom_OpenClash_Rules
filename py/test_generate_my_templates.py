@@ -7,7 +7,7 @@ from generate_my_templates import AI_FALLBACK, GENERAL_FALLBACK, transform
 AI_GROUPS = ("🤖 ChatGPT", "🤖 AI服务")
 SAMPLE = """[custom]
 ;设置节点分组标志位
-custom_proxy_group=🚀 手动选择`select`.*
+custom_proxy_group=🚀 手动选择`select`[]♻️ 自动选择`.*
 custom_proxy_group=♻️ 自动选择`url-test`.*`https://example.test`300
 custom_proxy_group=🤖 ChatGPT`select`[]🚀 手动选择`.*
 custom_proxy_group=🤖 AI服务`select`[]♻️ 自动选择`.*
@@ -28,6 +28,9 @@ class GenerateMyTemplatesTest(unittest.TestCase):
 
         self.assertEqual(result.count(f"custom_proxy_group={GENERAL_FALLBACK}`"), 1)
         self.assertEqual(result.count(f"custom_proxy_group={AI_FALLBACK}`"), 1)
+        manual_members = find_group(result, "🚀 手动选择").split("`")[2:]
+        self.assertEqual(manual_members.count(f"[]{GENERAL_FALLBACK}"), 1)
+        self.assertEqual(manual_members[:2], ["[]♻️ 自动选择", f"[]{GENERAL_FALLBACK}"])
         for name in AI_GROUPS:
             self.assertEqual(find_group(result, name).split("`")[2], f"[]{AI_FALLBACK}")
         self.assertEqual(find_group(result, "🤖 国内AI服务"), find_group(SAMPLE, "🤖 国内AI服务"))

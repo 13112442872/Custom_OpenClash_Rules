@@ -46,6 +46,17 @@ def transform(text: str, ai_groups: tuple[str, ...]) -> str:
         raise ValueError("the US node group has no node-matching expression")
     us_pattern = us_fields[2]
 
+    manual_index = only_group(lines, start, end, "🚀 手动选择")
+    manual_fields = lines[manual_index].split("`")
+    fallback_member = f"[]{GENERAL_FALLBACK}"
+    if fallback_member not in manual_fields[2:]:
+        try:
+            auto_member_index = manual_fields.index("[]♻️ 自动选择", 2)
+        except ValueError as error:
+            raise ValueError("the manual group has no auto-select member") from error
+        manual_fields.insert(auto_member_index + 1, fallback_member)
+        lines[manual_index] = "`".join(manual_fields)
+
     for name in ai_groups:
         index = only_group(lines, start, end, name)
         if f"[]{AI_FALLBACK}" not in lines[index]:
