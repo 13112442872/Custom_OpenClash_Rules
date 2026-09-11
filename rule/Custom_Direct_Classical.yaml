@@ -1,7 +1,7 @@
 # Generated from rule/Custom_Direct.list
 # REPO: https://github.com/Aethersailor/Custom_OpenClash_Rules
 # SOURCE: https://github.com/Aethersailor/Custom_OpenClash_Rules/blob/main/rule/Custom_Direct.list
-# TOTAL: 865
+# TOTAL: 870
 
 payload:
   - DOMAIN-KEYWORD,m-team
@@ -222,6 +222,7 @@ payload:
   - DOMAIN-SUFFIX,dockerpull.pw
   - DOMAIN-SUFFIX,dothantech.com
   - DOMAIN-SUFFIX,douqq.com
+  - DOMAIN-SUFFIX,dropiy.com
   - DOMAIN-SUFFIX,drvceo.com
   - DOMAIN-SUFFIX,dskj-ops.com
   - DOMAIN-SUFFIX,dtproj.top
@@ -316,6 +317,7 @@ payload:
   - DOMAIN-SUFFIX,goalmapapp.com
   - DOMAIN-SUFFIX,goka.top
   - DOMAIN-SUFFIX,gongxiangjizhang.com
+  - DOMAIN-SUFFIX,goodq.top
   - DOMAIN-SUFFIX,goofish.pro
   - DOMAIN-SUFFIX,googoc.com
   - DOMAIN-SUFFIX,gootho.com
@@ -412,6 +414,7 @@ payload:
   - DOMAIN-SUFFIX,iosgujian.com
   - DOMAIN-SUFFIX,iot889.com
   - DOMAIN-SUFFIX,iotrix.net
+  - DOMAIN-SUFFIX,ip.plus
   - DOMAIN-SUFFIX,ip159.com
   - DOMAIN-SUFFIX,ip6.seeip.org
   - DOMAIN-SUFFIX,ipapi.co
@@ -448,6 +451,7 @@ payload:
   - DOMAIN-SUFFIX,kaijiejinrong.com
   - DOMAIN-SUFFIX,kaipanhong.com
   - DOMAIN-SUFFIX,kancaibao.com
+  - DOMAIN-SUFFIX,kanxiquan.com
   - DOMAIN-SUFFIX,kaspersky-labs.com
   - DOMAIN-SUFFIX,kaspersky.com
   - DOMAIN-SUFFIX,kasperskydaily.com
@@ -651,6 +655,7 @@ payload:
   - DOMAIN-SUFFIX,sixloy428.top
   - DOMAIN-SUFFIX,skktec.com
   - DOMAIN-SUFFIX,sksight.com
+  - DOMAIN-SUFFIX,skxvc.com
   - DOMAIN-SUFFIX,snfox.com
   - DOMAIN-SUFFIX,snltty.com
   - DOMAIN-SUFFIX,soulteary.com
