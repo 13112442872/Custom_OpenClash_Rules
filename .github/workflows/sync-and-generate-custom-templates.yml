@@ -22,23 +22,56 @@ jobs:
           ref: main
           fetch-depth: 0
 
-      - name: Merge upstream main
+      - name: Sync upstream main except workflows
+        shell: bash
         run: |
+          set -euo pipefail
+
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git remote add upstream https://github.com/Aethersailor/Custom_OpenClash_Rules.git
+          git remote add upstream https://github.com/Aethersailor/Custom_OpenClash_Rules.git 2>/dev/null || \
+            git remote set-url upstream https://github.com/Aethersailor/Custom_OpenClash_Rules.git
           git fetch upstream main
-          git merge --no-edit upstream/main
+
+          UPSTREAM_SHA="$(git rev-parse upstream/main)"
+          MARKER_FILE=".github/upstream-sync-sha"
+
+          if [ -f "$MARKER_FILE" ]; then
+            SAVED_SHA="$(tr -d '[:space:]' < "$MARKER_FILE")"
+          else
+            SAVED_SHA=""
+          fi
+
+          if [ -n "$SAVED_SHA" ] && git cat-file -e "${SAVED_SHA}^{commit}" 2>/dev/null; then
+            BASE_SHA="$SAVED_SHA"
+          else
+            BASE_SHA="$(git merge-base HEAD upstream/main)"
+          fi
+
+          echo "Syncing upstream: $BASE_SHA -> $UPSTREAM_SHA"
+          echo "Excluded path: .github/workflows/**"
+
+          git diff --binary "$BASE_SHA" "$UPSTREAM_SHA" -- \
+            . ':(exclude).github/workflows/**' > /tmp/upstream.patch
+
+          if [ -s /tmp/upstream.patch ]; then
+            git apply --3way --index /tmp/upstream.patch
+          else
+            echo "No upstream file changes outside .github/workflows/."
+          fi
+
+          printf '%s\n' "$UPSTREAM_SHA" > "$MARKER_FILE"
+          git add "$MARKER_FILE"
 
       - name: Generate and test templates
         run: |
           python py/generate_my_templates.py
           python py/test_generate_my_templates.py
 
-      - name: Commit generated templates
+      - name: Commit synced files and generated templates
         run: |
           git add cfg/my_Custom_Clash.ini cfg/my_Custom_Clash_Full.ini
           if ! git diff --cached --quiet; then
-            git commit -m "chore: update custom OpenClash templates"
+            git commit -m "chore: sync upstream and update custom OpenClash templates"
           fi
           git push origin HEAD:main
