@@ -1,0 +1,43 @@
+name: Daily Sync Upstream
+
+on:
+  schedule:
+    # 每天北京时间 04:23（UTC 20:23）
+    - cron: "23 20 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: main-writers
+
+jobs:
+  sync:
+    if: github.repository == '13112442872/Custom_OpenClash_Rules'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout main
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          ref: main
+          fetch-depth: 0
+
+      - name: Merge upstream while preserving workflow settings
+        shell: bash
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git remote add upstream https://github.com/Aethersailor/Custom_OpenClash_Rules.git
+          git fetch upstream main
+          if ! git merge --no-commit --no-ff upstream/main; then
+            git merge --abort
+            echo "::error::Upstream conflicts with local changes; resolve the conflicts manually."
+            exit 1
+          fi
+          # 保留本仓库工作流，防止同步引入或重新启用上游任务。
+          git restore --source=HEAD --staged --worktree -- .github/workflows
+          if git rev-parse -q --verify MERGE_HEAD > /dev/null; then
+            git commit -m "chore: sync upstream main"
+            git push origin HEAD:main
+          fi
